@@ -14,9 +14,20 @@ import {
 import {
   marginPadding
 } from "../styles";
+import Article from "../components/Article";
 import CategoryButtons from "../components/CategoryButtons";
 
 fetch;
+
+function ArticleSeparatorComponent() {
+  return (
+    <View
+      style={{
+        height: marginPadding / 2
+      }}
+    />
+  )
+}
 
 export default function Home({navigation}) {
   const getArticles = useCallback(async () => {
@@ -34,7 +45,7 @@ export default function Home({navigation}) {
         }
       }
       
-      if (!q.length) {
+      if (!q.length && searchText.current) {
         q.push(`"${searchText.current}"`);
       }
       
@@ -45,7 +56,7 @@ export default function Home({navigation}) {
       console.log(q);
       
       const result = await (await fetch(
-        `https://newsapi.org/v2/everything?q=${encodedQ}`,
+        `https://newsapi.org/v2/everything?pageSize=100&q=${encodedQ}`,
         {
           headers
         }
@@ -53,8 +64,11 @@ export default function Home({navigation}) {
       
       if (result.status === "error") {
         console.log(result);
+        setArticles([]);
       } else {
-        console.log("Total results", result.totalResults);
+        console.log(result.articles.length, result.totalResults);
+        
+        setArticles(result.articles);
       }
     } catch (error) {
       console.log(error);
@@ -79,9 +93,18 @@ export default function Home({navigation}) {
     getArticles();
   }, [getArticles]);
   
+  const renderArticle = useCallback(({item, index}) => (
+    <Article
+      index={index}
+      item={item}
+    />
+  ), []);
+  
   const checkedCategories = useRef(new Set()).current;
   const searchText = useRef();
   const searchTextTid = useRef();
+  
+  const [articles, setArticles] = useState([]);
   
   const [categories] = useState(() => [
     "entertainment",
@@ -110,6 +133,15 @@ export default function Home({navigation}) {
         categories={categories}
         columnCount={2}
         onPress={onPressCategory}
+      />
+      <FlatList
+        ItemSeparatorComponent={ArticleSeparatorComponent}
+        data={articles}
+        renderItem={renderArticle}
+        style={{
+          backgroundColor: "lightblue",
+          marginTop: marginPadding
+        }}
       />
     </View>
   );
