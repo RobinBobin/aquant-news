@@ -16,7 +16,59 @@ import {
 } from "../styles";
 import CategoryButtons from "../components/CategoryButtons";
 
+fetch;
+
 export default function Home({navigation}) {
+  const getArticles = useCallback(async () => {
+    try {
+      const headers = new Headers();
+      headers.append("X-Api-Key", "70d003bfa6874853a0c96a2ec7e39216");
+      
+      let q = [];
+      
+      for (const category of checkedCategories) {
+        if (searchText.current) {
+          q.push(`("${searchText.current}" AND ${category})`);
+        } else {
+          q.push(category)
+        }
+      }
+      
+      if (!q.length) {
+        q.push(`"${searchText.current}"`);
+      }
+      
+      q = q.join(" OR ");
+      
+      const encodedQ = encodeURIComponent(q);
+      
+      console.log(q);
+      
+      const result = await (await fetch(
+        `https://newsapi.org/v2/everything?q=${encodedQ}`,
+        {
+          headers
+        }
+      )).json();
+      
+      if (result.status === "error") {
+        console.log(result);
+      } else {
+        console.log("Total results", result.totalResults);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  
+  const onChangeSearchText = useCallback(value => {
+    searchText.current = value;
+    
+    clearTimeout(searchTextTid.current);
+    
+    searchTextTid.current = setTimeout(getArticles, 1500);
+  }, [getArticles]);
+  
   const onPressCategory = useCallback((isChecked, name) => {
     if (isChecked) {
       checkedCategories.add(name);
@@ -24,10 +76,12 @@ export default function Home({navigation}) {
       checkedCategories.delete(name);
     }
     
-    console.log(checkedCategories);
-  }, []);
+    getArticles();
+  }, [getArticles]);
   
   const checkedCategories = useRef(new Set()).current;
+  const searchText = useRef();
+  const searchTextTid = useRef();
   
   const [categories] = useState(() => [
     "entertainment",
@@ -47,6 +101,8 @@ export default function Home({navigation}) {
       style={styles.container}
     >
       <Input
+        autoCapitalize={"none"}
+        onChangeText={onChangeSearchText}
         placeholder={"search text"}
         renderErrorMessage={false}
       />
