@@ -34,7 +34,7 @@ export default function Home({navigation}) {
     "general",
     "business",
     "health",
-    "sport",
+    "sports",
     "science",
     "technology"
   ].map(category => ({
