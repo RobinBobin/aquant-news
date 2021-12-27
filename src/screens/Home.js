@@ -15,7 +15,7 @@ import {
   homeBackgroundColor,
   marginPadding
 } from "../styles";
-import Article from "../components/Article";
+import ArticlePreview from "../components/ArticlePreview";
 import CategoryButtons from "../components/CategoryButtons";
 
 fetch;
@@ -94,8 +94,8 @@ export default function Home({navigation}) {
     getArticles();
   }, [getArticles]);
   
-  const renderArticle = useCallback(({item, index}) => (
-    <Article
+  const renderArticlePreview = useCallback(({item, index}) => (
+    <ArticlePreview
       index={index}
       item={item}
     />
@@ -138,7 +138,7 @@ export default function Home({navigation}) {
       <FlatList
         ItemSeparatorComponent={ArticleSeparatorComponent}
         data={articles}
-        renderItem={renderArticle}
+        renderItem={renderArticlePreview}
         style={{
           backgroundColor: "lightblue",
           marginTop: marginPadding

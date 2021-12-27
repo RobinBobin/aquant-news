@@ -1,5 +1,9 @@
-import React from "react";
+import React, {
+  useCallback
+} from "react";
 import {
+  Linking,
+  Pressable,
   ScrollView,
   View
 } from "react-native";
@@ -14,6 +18,16 @@ import {
 } from "../styles";
 
 export default function Article({route}) {
+  const onPressContent = useCallback(async () => {
+    try {
+      if (await Linking.canOpenURL(route.params.item.url)) {
+        Linking.openURL(route.params.item.url);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [route.params.item.url]);
+  
   return (
     <View
       style={{
@@ -23,6 +37,7 @@ export default function Article({route}) {
       }}
     >
       <ScrollView
+        showsVerticalScrollIndicator={false}
         style={{
           backgroundColor: route.params.backgroundColor,
           borderRadius: 20,
@@ -55,13 +70,17 @@ export default function Article({route}) {
         </ArticleRow>
         <ArticleRow>
           <Text>
-            {route.params.item.description}
+            {route.params.item.description || "<No description>"}
           </Text>
         </ArticleRow>
         <ArticleRow>
-          <Text>
-            {route.params.item.content}
-          </Text>
+          <Pressable
+            onPress={onPressContent}
+          >
+            <Text>
+              {route.params.item.content}
+            </Text>
+          </Pressable>
         </ArticleRow>
       </ScrollView>
     </View>

@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState
 } from "react";
 import {
@@ -22,7 +21,7 @@ import {
   getRandomColor
 } from "../utils";
 
-export default function Article({index, item}) {
+export default function ArticlePreview({index, item}) {
   const navigation = useNavigation();
   
   const description = useMemo(() => {
@@ -30,7 +29,7 @@ export default function Article({index, item}) {
     
     return (
       <Text>
-        {item.description.length > maxLength ? `${item.description.substring(0, maxLength)}\u2026` : item.description || "<no description>"}
+        {item.description?.length > maxLength ? `${item.description.substring(0, maxLength)}\u2026` : item.description || "<no description>"}
       </Text>
     );
   }, [item.description]);
