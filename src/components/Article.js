@@ -8,12 +8,13 @@ import React, {
 } from "react";
 import {
   Image,
-  Pressable,
-  View
+  Pressable
 } from "react-native";
 import {
   Text
 } from "react-native-elements";
+import ArticleRow from "./ArticleRow";
+import NoImage from "./NoImage";
 import {
   marginPadding
 } from "../styles";
@@ -21,43 +22,8 @@ import {
   getRandomColor
 } from "../utils";
 
-function Row({children}) {
-  const dotDiameter = useRef(6).current;
-  
-  return (
-    <View
-      style={{
-        alignItems: "center",
-        flexDirection: "row",
-        paddingStart: marginPadding,
-        paddingVertical: marginPadding / 5
-      }}
-    >
-      <View
-        style={{
-          backgroundColor: "black",
-          borderRadius: dotDiameter / 2,
-          height: dotDiameter,
-          width: dotDiameter
-        }}
-      />
-      <View
-        style={{
-          paddingStart: marginPadding / 2
-        }}
-      >
-        {children}
-      </View>
-    </View>
-  );
-}
-
 export default function Article({index, item}) {
   const navigation = useNavigation();
-  
-  const onPress = useCallback(() => {
-    navigation.navigate("Article");
-  }, []);
   
   const description = useMemo(() => {
     const maxLength = 80;
@@ -69,8 +35,24 @@ export default function Article({index, item}) {
     );
   }, [item.description]);
   
+  const publishedAt = useMemo(() => item.publishedAt, [item.publishedAt]);
+  
   const [backgroundColor] = useState(getRandomColor);
   const [image, setImage] = useState();
+  
+  const onPress = useCallback(() => {
+    navigation.navigate("Article", {
+      backgroundColor,
+      image,
+      item,
+      publishedAt,
+    });
+  }, [
+    backgroundColor,
+    image,
+    item,
+    publishedAt
+  ]);
   
   useEffect(() => {
     if (item.urlToImage) {
@@ -99,30 +81,28 @@ export default function Article({index, item}) {
         paddingVertical: marginPadding / 2
       }}
     >
-      <Row>
+      <ArticleRow>
         <Text>
           {item.title}
         </Text>
-      </Row>
-      <Row>
+      </ArticleRow>
+      <ArticleRow>
         <Text>
-          {item.publishedAt}
+          {publishedAt}
         </Text>
-      </Row>
-      <Row>
+      </ArticleRow>
+      <ArticleRow>
         {
           item.urlToImage
           ?
             image
           :
-            <Text>
-              {"<"}no image{">"}
-            </Text>
+            <NoImage />
         }
-      </Row>
-      <Row>
+      </ArticleRow>
+      <ArticleRow>
         {description}
-      </Row>
+      </ArticleRow>
     </Pressable>
   );
 };

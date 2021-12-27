@@ -12,6 +12,7 @@ import React from "react";
 import { ThemeProvider } from "react-native-elements";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
+  homeBackgroundColor,
   theme
 } from "./src/styles";
 import Article from "./src/screens/Article";
@@ -38,6 +39,9 @@ const App = () => {
               component={Article}
               name="Article"
               options={{
+                headerStyle: {
+                  backgroundColor: homeBackgroundColor
+                },
                 title: ""
               }}
             />

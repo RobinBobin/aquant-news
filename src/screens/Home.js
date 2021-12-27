@@ -12,6 +12,7 @@ import {
   Input
 } from "react-native-elements";
 import {
+  homeBackgroundColor,
   marginPadding
 } from "../styles";
 import Article from "../components/Article";
@@ -149,7 +150,7 @@ export default function Home({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "cyan",
+    backgroundColor: homeBackgroundColor,
     flex: 1,
     padding: marginPadding
   }

@@ -7,7 +7,7 @@ export function getRandomColor() {
     result.push(hexDigits[random(0, hexDigits.length, true)]);
   }
   
-  return `#${result.join("")}` + "30";
+  return `#${result.join("")}`;
 };
 
 function random(min, max, round, maxInclusive) {
