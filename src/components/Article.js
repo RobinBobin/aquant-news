@@ -1,12 +1,14 @@
 import { useNavigation } from "@react-navigation/native";
 import React, {
   useCallback,
+  useEffect,
+  useMemo,
   useRef,
   useState
 } from "react";
 import {
+  Image,
   Pressable,
-  StyleSheet,
   View
 } from "react-native";
 import {
@@ -27,7 +29,8 @@ function Row({children}) {
       style={{
         alignItems: "center",
         flexDirection: "row",
-        paddingStart: marginPadding
+        paddingStart: marginPadding,
+        paddingVertical: marginPadding / 5
       }}
     >
       <View
@@ -56,18 +59,40 @@ export default function Article({index, item}) {
     navigation.navigate("Article");
   }, []);
   
-  const [backgroundColor] = useState(getRandomColor);
+  const description = useMemo(() => {
+    const maxLength = 80;
+    
+    return (
+      <Text>
+        {item.description.length > maxLength ? `${item.description.substring(0, maxLength)}\u2026` : item.description || "<no description>"}
+      </Text>
+    );
+  }, [item.description]);
   
-  const [description] = useState(() => (
-    item.description.length > 80 ? `${item.description.substring(0, 80)}...` : item.description
-  ));
+  const [backgroundColor] = useState(getRandomColor);
+  const [image, setImage] = useState();
+  
+  useEffect(() => {
+    if (item.urlToImage) {
+      Image.getSize(item.urlToImage, (width, height) => {
+        setImage(
+          <Image
+            source={{uri: item.urlToImage}}
+            style={{
+              height: height / 5,
+              width: width / 5
+            }}
+          />
+        );
+      });
+    }
+  }, [item.urlToImage]);
   
   return (
     <Pressable
       onPress={onPress}
       style={{
         backgroundColor,
-        borderWidth: StyleSheet.hairlineWidth,
         borderRadius: 40,
         marginHorizontal: marginPadding,
         marginTop: index ? undefined : marginPadding,
@@ -85,9 +110,18 @@ export default function Article({index, item}) {
         </Text>
       </Row>
       <Row>
-        <Text>
-          {description}
-        </Text>
+        {
+          item.urlToImage
+          ?
+            image
+          :
+            <Text>
+              {"<"}no image{">"}
+            </Text>
+        }
+      </Row>
+      <Row>
+        {description}
       </Row>
     </Pressable>
   );
